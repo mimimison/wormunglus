@@ -40,14 +40,16 @@
   </body>
 
   <script>
-    const SIZE = 5;
-    let grid = Array.from({ length: SIZE }, () =>
-      Array(SIZE).fill(WColor.GRAY),
+    const GUESSES = 6; // Rows
+    const WORDLEN = 5; // Cols
+    let grid = Array.from({ length: GUESSES }, () =>
+      Array(WORDLEN).fill(WColor.GRAY),
     );
 
     // HACKY FUN :)
-    if (SIZE === 5) {
+    if (GUESSES === 6 && WORDLEN === 5) {
       grid = [
+        [".", ".", ".", ".", "."],
         [".", ".", ".", ".", "."],
         [".", ".", "Y", "Y", "."],
         ["Y", "Y", "Y", ".", "."],
@@ -60,8 +62,8 @@
     function buildGrid() {
       const container = document.getElementById("grid");
       container.innerHTML = ""; // Clear the grid.
-      for (let r = 0; r < SIZE; r++) {
-        for (let c = 0; c < SIZE; c++) {
+      for (let r = 0; r < GUESSES; r++) {
+        for (let c = 0; c < WORDLEN; c++) {
           const tile = document.createElement("button");
           tile.className = "tile";
           tile.dataset.state = grid[r][c];
@@ -81,7 +83,9 @@
     }
 
     document.getElementById("resetBtn").addEventListener("click", () => {
-      grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(WColor.GRAY));
+      grid = Array.from({ length: GUESSES }, () =>
+        Array(WORDLEN).fill(WColor.GRAY),
+      );
       buildGrid();
       resetStatus();
     });
