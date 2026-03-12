@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" initial-scale="1.0" />
     <title>Wormunglus</title>
     <link rel="icon" type="image/x-icon" href="1686.png" />
     <link rel="stylesheet" href="style.css" />
@@ -99,7 +100,6 @@
           .value.trim()
           .toLowerCase();
         const box = document.getElementById("resultsBox");
-        console.log(word);
 
         if (!word || word.length !== WORDLEN || !/^[a-z]+$/.test(word)) {
           box.innerHTML = `<div class="status-msg">You must enter a valid ${WORDLEN}-letter word.</div>`;
@@ -108,8 +108,8 @@
 
         const patterns = grid.map((row) => row.join(""));
         const solutions = findSolution(word, WORDS, patterns);
-        box.innerHTML = "";
-        solutions.forEach((sol, i) => {
+        box.innerHTML = ""; // Clear the results box.
+        for (let i = 0; i < solutions.length; i++) {
           const row = document.createElement("div");
           row.className = "result-row";
           row.style.animationDelay = `${i * 40}ms`;
@@ -128,10 +128,11 @@
           }
 
           const guess = document.createElement("span");
-          if (sol.length > 0) {
+          if (solutions[i].length > 0) {
             guess.className = "result-word";
             // Choose a solution at random because I'm lazy.
-            guess.textContent = sol[Math.floor(Math.random() * sol.length)];
+            guess.textContent =
+              solutions[i][Math.floor(Math.random() * solutions[i].length)];
           } else {
             guess.className = "result-none";
             guess.textContent = "no match found";
@@ -141,7 +142,7 @@
           row.appendChild(mini);
           row.appendChild(guess);
           box.appendChild(row);
-        });
+        }
       }
 
       document.getElementById("findBtn").addEventListener("click", runSearch);
