@@ -8,7 +8,7 @@ const WColor = Object.freeze({
 /**
  * Matches sequences of color patterns and returns their every corresponding valid guess.
  * @param {string} word - Today's Wordle word.
- * @param {string} wordList - Wordle's word list.
+ * @param {string[]} wordList - Wordle's word list.
  * @param {ColorString[]} patterns - The desired color patterns to match against.
  * @returns {string[][]}
  */
