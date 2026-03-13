@@ -1,8 +1,12 @@
+<!--
+SPDX-FileCopyrightText: 2026 mimimison (https://github.com/mimimison)
+SPDX-License-Identifier: BSD-3-Clause
+-->
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" initial-scale="1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wormunglus</title>
     <link rel="icon" type="image/x-icon" href="1686.png" />
     <link rel="stylesheet" href="style.css" />
@@ -12,7 +16,7 @@
   <body>
     <header>
       <h1>Wormunglus</h1>
-      <p>Drawing with Wordle!</p>
+      <p>Drawing with Wordle! <a href="https://github.com/mimimison/Wormunglus">GitHub</a></p>
     </header>
 
     <div class="layout">
@@ -40,21 +44,14 @@
     <script>
       const GUESSES = 6; // Rows
       const WORDLEN = 5; // Cols
-      let grid = Array.from({ length: GUESSES }, () =>
-        Array(WORDLEN).fill(WColor.GRAY),
-      );
-
-      // HACKY FUN :)
-      if (GUESSES === 6 && WORDLEN === 5) {
-        grid = [
-          [".", "Y", "Y", "Y", "."],
-          ["Y", "Y", ".", ".", "."],
-          ["Y", "Y", "Y", "Y", "."],
-          [".", "Y", "Y", "Y", "."],
-          [".", "Y", ".", "Y", "."],
-          ["G", "G", "G", "G", "G"],
-        ];
-      }
+      let grid = [       
+        [".", "Y", "Y", "Y", "."],
+        ["Y", "Y", ".", ".", "."],
+        ["Y", "Y", "Y", "Y", "."],
+        [".", "Y", "Y", "Y", "."],
+        [".", "Y", ".", "Y", "."],
+        ["G", "G", "G", "G", "G"],
+      ];
 
       // GRID PANEL
       function buildGrid() {
@@ -94,7 +91,7 @@
           '<div class="status-msg">Click the tiles, enter a word, and press find!</div>';
       }
 
-      function runSearch() {
+      function search() {
         const word = document
           .getElementById("wordInput")
           .value.trim()
@@ -112,7 +109,7 @@
         for (let i = 0; i < solutions.length; i++) {
           const row = document.createElement("div");
           row.className = "result-row";
-          row.style.animationDelay = `${i * 40}ms`;
+          row.style.animationDelay = `${i * 20}ms`;
 
           const num = document.createElement("span");
           num.className = "row-num";
@@ -145,10 +142,10 @@
         }
       }
 
-      document.getElementById("findBtn").addEventListener("click", runSearch);
+      document.getElementById("findBtn").addEventListener("click", search);
       document.getElementById("wordInput").addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
-          runSearch();
+          search();
         }
       });
 

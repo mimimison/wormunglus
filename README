@@ -1,0 +1,5 @@
+# Wormunglus
+A fun static website that finds Wordle color patterns hosted on GitHub Pages at https://mimimison.github.io/wormunglus! Click the tiles to "draw" any desired pattern, enter today's Wordle word (or any word), and click the find button to find legal Wordle guesses that would produce that desired pattern.
+
+## Assets
+Files `1686.png` and `words.js` are not covered by this repository's license.

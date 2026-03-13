@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 mimimison (https://github.com/mimimison)
+// SPDX-License-Identifier: BSD-3-Clause
 /**@typedef {string} ColorString - a string consisting only of the characters of WColor. */
 const WColor = Object.freeze({
   GREEN: "G",
