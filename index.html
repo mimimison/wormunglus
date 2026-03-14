@@ -16,13 +16,24 @@ SPDX-License-Identifier: BSD-3-Clause
   <body>
     <header>
       <h1>Wormunglus</h1>
-      <p>Drawing with Wordle! <a href="https://github.com/mimimison/Wormunglus">GitHub</a></p>
+      <p>
+        Drawing with Wordle!
+        <a href="https://github.com/mimimison/Wormunglus">GitHub</a>
+      </p>
     </header>
+
+    <div class="toast" id="toast"></div>
 
     <div class="layout">
       <div class="grid-panel">
         <div class="grid" id="grid"></div>
-        <button class="btn-reset" id="resetBtn">Reset Grid</button>
+        <div class="grid-buttons">
+          <div class="safe-buttons">
+            <button class="btn-copy" id="copyBtn">Copy</button>
+            <button class="btn-paste" , id="pasteBtn">Paste</button>
+          </div>
+          <button class="btn-reset" id="resetBtn">Reset Grid</button>
+        </div>
       </div>
 
       <div class="search-panel">
@@ -37,14 +48,21 @@ SPDX-License-Identifier: BSD-3-Clause
           />
           <button class="btn-find" id="findBtn">Find</button>
         </div>
-        <div class="results-box" id="resultsBox"></div>
+        <div class="results-box" id="resultsBox">
+          <div class="status-msg">
+            Click the tiles, enter a word, and press find!
+          </div>
+        </div>
       </div>
     </div>
 
     <script>
+      const WCOLORS = [WColor.GRAY, WColor.GREEN, WColor.YELLOW];
+      const EMOJIS = ["⬛", "🟩", "🟨"];
+
       const GUESSES = 6; // Rows
       const WORDLEN = 5; // Cols
-      let grid = [       
+      let grid = [
         [".", "Y", "Y", "Y", "."],
         ["Y", "Y", ".", ".", "."],
         ["Y", "Y", "Y", "Y", "."],
@@ -52,6 +70,13 @@ SPDX-License-Identifier: BSD-3-Clause
         [".", "Y", ".", "Y", "."],
         ["G", "G", "G", "G", "G"],
       ];
+
+      function showToast(text) {
+        const toast = document.getElementById("toast");
+        toast.innerHTML = text;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2000);
+      }
 
       // GRID PANEL
       function buildGrid() {
@@ -71,26 +96,70 @@ SPDX-License-Identifier: BSD-3-Clause
       }
 
       function cycleTile(row, col, tile) {
-        const WCOLORS = [WColor.GRAY, WColor.GREEN, WColor.YELLOW];
         const i = WCOLORS.indexOf(grid[row][col]);
         grid[row][col] = WCOLORS[(i + 1) % WCOLORS.length];
         tile.dataset.state = grid[row][col];
       }
+
+      document.getElementById("copyBtn").addEventListener("click", () => {
+        const text = grid
+          .map((row) => row.map((e) => EMOJIS[WCOLORS.indexOf(e)]).join(""))
+          .join("\n");
+        try {
+          navigator.clipboard.writeText(text);
+          showToast("Copied grid to clipboard!");
+        } catch (error) {
+          showToast(error.message);
+        }
+      });
+
+      function textToGrid(text) {
+        const ERRMSG = "Clipboard must be a 6x5 grid of ⬛🟩🟨";
+        const rows = text.trim().split(/\r?\n/);
+        if (rows.length !== GUESSES) throw new Error(ERRMSG);
+        const pasted = rows.map((row) => {
+          const cells = Array.from(row.trim());
+          if (cells.length !== WORDLEN) throw new Error(ERRMSG);
+          return cells.map((emoji) => {
+            const i = EMOJIS.indexOf(emoji);
+            if (i === -1) throw new Error(ERRMSG);
+            return WCOLORS[i];
+          });
+        });
+        return pasted;
+      }
+
+      document
+        .getElementById("pasteBtn")
+        .addEventListener("click", async () => {
+          try {
+            const clipboardContents = await navigator.clipboard.read();
+            for (const item of clipboardContents) {
+              if (item.types.includes("text/plain")) {
+                const blob = await item.getType("text/plain");
+                const text = await blob.text();
+                try {
+                  grid = textToGrid(text);
+                  buildGrid();
+                  showToast("Pasted clipboard contents to grid!");
+                } catch (error) {
+                  showToast(error);
+                }
+              }
+            }
+          } catch (error) {
+            showToast(error.message);
+          }
+        });
 
       document.getElementById("resetBtn").addEventListener("click", () => {
         grid = Array.from({ length: GUESSES }, () =>
           Array(WORDLEN).fill(WColor.GRAY),
         );
         buildGrid();
-        resetStatus();
       });
 
       // SEARCH PANEL
-      function resetStatus() {
-        document.getElementById("resultsBox").innerHTML =
-          '<div class="status-msg">Click the tiles, enter a word, and press find!</div>';
-      }
-
       function search() {
         const word = document
           .getElementById("wordInput")
@@ -151,7 +220,6 @@ SPDX-License-Identifier: BSD-3-Clause
 
       // INIT
       buildGrid();
-      resetStatus();
     </script>
   </body>
 </html>
