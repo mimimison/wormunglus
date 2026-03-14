@@ -114,9 +114,9 @@ SPDX-License-Identifier: BSD-3-Clause
       });
 
       function textToGrid(text) {
-        const ERRMSG = "Clipboard must be a 6x5 grid of ⬛🟩🟨";
+        const ERRMSG = "Clipboard must be a ~6x5 grid of ⬛🟩🟨";
         const rows = text.trim().split(/\r?\n/);
-        if (rows.length !== GUESSES) throw new Error(ERRMSG);
+        if (rows.length > GUESSES) throw new Error(ERRMSG);
         const pasted = rows.map((row) => {
           const cells = Array.from(row.trim());
           if (cells.length !== WORDLEN) throw new Error(ERRMSG);
@@ -126,6 +126,10 @@ SPDX-License-Identifier: BSD-3-Clause
             return WCOLORS[i];
           });
         });
+        // Allow for pasting directly from Wordle website.
+        for (let i = rows.length; i < GUESSES; i++) {
+          pasted.push(Array(WORDLEN).fill(WColor.GRAY));
+        }
         return pasted;
       }
 
@@ -137,7 +141,12 @@ SPDX-License-Identifier: BSD-3-Clause
             for (const item of clipboardContents) {
               if (item.types.includes("text/plain")) {
                 const blob = await item.getType("text/plain");
-                const text = await blob.text();
+                let text = await blob.text();
+                // Allow for pasting directly from Wordle website.
+                text = text
+                  .split("\n")
+                  .filter((line) => !line.includes("Wordle"))
+                  .join("\n");
                 try {
                   grid = textToGrid(text);
                   buildGrid();
